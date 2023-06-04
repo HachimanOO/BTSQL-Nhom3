@@ -37,13 +37,22 @@ public class CustomerDAOImpl implements CustomerDAO{
 
     @Override
     public boolean addCustomer(Customer customer) {
-        String sql = "INSERT INTO customer (customer_id, customer_name) VALUES (?, ?)";
+//         String sql = "INSERT INTO customer (customer_id, customer_name) VALUES (?, ?)";
+//         try {
+//             PreparedStatement statement = database.getConnection().prepareStatement(sql);
+//             statement.setInt(1, customer.getCustomerId());
+//             statement.setString(2, customer.getCustomerName());
+//             System.out.println("Added success");
+//             return statement.execute();
+//         } catch (SQLException e) {
+//             throw new RuntimeException(e);
+//         }
+        String sql = "{call add_customer(?, ?)}";
         try {
-            PreparedStatement statement = database.getConnection().prepareStatement(sql);
-            statement.setInt(1, customer.getCustomerId());
-            statement.setString(2, customer.getCustomerName());
-            System.out.println("Added success");
-            return statement.execute();
+            CallableStatement callableStatement = (CallableStatement) database.getConnection().prepareCall(sql);
+            callableStatement.setInt(1, customer.getCustomerId());
+            callableStatement.setString(2, customer.getCustomerName());
+            return callableStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
