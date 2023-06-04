@@ -16,11 +16,10 @@ public class SaleManagement {
 //         lineItemDAO.addLineItem(new LineItem(3,2,1,2500));
 //     }
     public static void main(String[] args) {
-        //getAllItemsByOrderId();
+        getAllItemsByOrderId();
         //getAllOrdersByCustomerId();
         //addCustomer();
         //deleteCustomer();
-        computeOrderTotal();
     }
     public static void getAllItemsByOrderId() {
         LineItemDAOImpl lineItemDAO = new LineItemDAOImpl();
@@ -46,10 +45,5 @@ public class SaleManagement {
     public static void deleteCustomer() {
         CustomerDAOImpl customerDAO = new CustomerDAOImpl();
         System.out.println(customerDAO.deleteCustomer(5));
-    }
-
-    public static void computeOrderTotal() {
-        LineItemDAOImpl lineItemDAO = new LineItemDAOImpl();
-        System.out.println(lineItemDAO.computeOrderTotal(3));
     }
 }
