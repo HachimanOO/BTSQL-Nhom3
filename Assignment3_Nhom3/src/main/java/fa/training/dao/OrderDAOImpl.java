@@ -15,7 +15,21 @@ public class OrderDAOImpl implements OrderDAO{
     }
     @Override
     public List<Order> getAllOrdersByCustomerId(int customerId) {
-        return null;
+        Database database = new Database();
+        List<Order> orderList = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE customer_id = ?";
+        try {
+            PreparedStatement statement = database.getConnection().prepareStatement(sql);
+            statement.setInt(1, customerId);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+                Order order = new Order(rs.getInt("order_id"), rs.getDate("order_date"), rs.getInt("customer_id"), rs.getInt("employee_id"), rs.getDouble("total"));
+                orderList.add(order);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return orderList;
     }
 
     @Override
