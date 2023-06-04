@@ -14,7 +14,19 @@ public class LineItemDAOImpl implements LineItemDAO{
     }
     @Override
     public List<LineItem> getAllItemsByOrderId(int orderId) {
-        return null;
+        String sql = "SELECT * FROM lineitem WHERE order_id = ?";
+            try {
+                PreparedStatement statement = database.getConnection().prepareStatement(sql);
+                statement.setInt(1, orderId);
+                ResultSet rs = statement.executeQuery();
+                while(rs.next()){
+                    LineItem lineItem = new LineItem(rs.getInt("order_id"), rs.getInt("product_id"), rs.getInt("quantity"), rs.getDouble("price"));
+                    lineItemList.add(lineItem);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return lineItemList;
     }
 
     @Override
