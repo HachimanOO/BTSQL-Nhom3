@@ -53,7 +53,14 @@ public class CustomerDAOImpl implements CustomerDAO{
 
     @Override
     public boolean deleteCustomer(int customerId) {
-        return false;
+        String sql = "{call delete_customer(?)}";
+        try {
+            CallableStatement callableStatement = (CallableStatement) database.getConnection().prepareCall(sql);
+            callableStatement.setInt(1, customerId);
+            return callableStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
