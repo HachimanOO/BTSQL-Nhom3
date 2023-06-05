@@ -1,0 +1,26 @@
+Click “sms” => Choose SQL
+
+5)
+DELIMITER //
+CREATE PROCEDURE add_customer (IN cus_id INT, IN cus_name VARCHAR(50))
+BEGIN
+INSERT INTO customer(customer_id, customer_name) VALUES (cus_id, cus_name);
+END //
+DELIMITER ;
+
+6)
+DELIMITER //
+CREATE PROCEDURE delete_customer(IN cus_id INT)
+BEGIN
+	DELETE FROM customer WHERE customer_id = cus_id;
+    	DELETE FROM orders WHERE customer_id = cus_id;
+END //
+DELIMITER ;
+
+7)
+DELIMITER //
+CREATE PROCEDURE update_customer(IN cus_id INT, IN cus_name VARCHAR(50))
+BEGIN
+	UPDATE customer SET customer_name = cus_name WHERE customer_id = cus_id;
+END //
+DELIMITER ;
