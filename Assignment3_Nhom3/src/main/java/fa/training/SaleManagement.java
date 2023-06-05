@@ -16,11 +16,22 @@ public class SaleManagement {
 //         lineItemDAO.addLineItem(new LineItem(3,2,1,2500));
 //     }
     public static void main(String[] args) {
-        getAllItemsByOrderId();
+        getAllCustomers();
+        //getAllItemsByOrderId();
         //getAllOrdersByCustomerId();
         //addCustomer();
         //deleteCustomer();
+        //updateCustomer();
     }
+    
+    public static void getAllCustomers(){
+        CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+        List<Customer> listCustomer = customerDAO.getAllCustomers();
+        for (Customer customer : listCustomer){
+            System.out.println(customer);
+        }
+    }
+    
     public static void getAllItemsByOrderId() {
         LineItemDAOImpl lineItemDAO = new LineItemDAOImpl();
         List<LineItem> lineItemList = lineItemDAO.getAllItemsByOrderId(905);
@@ -45,5 +56,10 @@ public class SaleManagement {
     public static void deleteCustomer() {
         CustomerDAOImpl customerDAO = new CustomerDAOImpl();
         System.out.println(customerDAO.deleteCustomer(5));
+    }
+    
+    public static void updateCustomer() {
+        CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+        System.out.println(customerDAO.updateCustomer(new Customer(4, "Phu")));
     }
 }
