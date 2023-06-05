@@ -74,7 +74,15 @@ public class CustomerDAOImpl implements CustomerDAO{
 
     @Override
     public boolean updateCustomer(Customer customer) {
-        return false;
+        String sql = "{call update_customer(?, ?)}";
+        try {
+            CallableStatement callableStatement = (CallableStatement) database.getConnection().prepareCall(sql);
+            callableStatement.setInt(1, customer.getCustomerId());
+            callableStatement.setString(2, customer.getCustomerName());
+            return callableStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException();
+        }
     }
 
     public static void main(String[] args) {
