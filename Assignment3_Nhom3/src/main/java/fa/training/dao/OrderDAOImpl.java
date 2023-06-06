@@ -8,112 +8,114 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class OrderDAOImpl implements OrderDAO{
-    private Database database;
-    public OrderDAOImpl(){
-        this.database = new Database();
-    }
-    @Override
-    public List<Order> getAllOrdersByCustomerId(int customerId) {
-        List<Order> orders = new ArrayList<>();
+public class OrderDAOImpl implements OrderDAO {
 
-        try {
-            // Tạo câu truy vấn SQL
-            String query = "SELECT order_id, order_date, customer_id, employee_id, total FROM Orders WHERE customer_id = ?";
+  private Database database;
 
-            // Tạo đối tượng PreparedStatement
-            PreparedStatement statement = database.getConnection().prepareStatement(query);
-            statement.setInt(1, customerId);
+  public OrderDAOImpl() {
+    this.database = new Database();
+  }
 
-            // Thực thi câu truy vấn
-            ResultSet resultSet = statement.executeQuery();
+  @Override
+  public List<Order> getAllOrdersByCustomerId(int customerId) {
+    List<Order> orders = new ArrayList<>();
 
-            // Lặp qua tất cả các bản ghi đơn hàng
-            while (resultSet.next()) {
-                int orderId = resultSet.getInt("order_id");
-                Date orderDate = resultSet.getDate("order_date");
-                int employeeId = resultSet.getInt("employee_id");
-                double total = resultSet.getDouble("total");
+    try {
+      // Tạo câu truy vấn SQL
+      String query = "SELECT order_id, order_date, customer_id, employee_id, total FROM Orders WHERE customer_id = ?";
 
-                Order order = new Order(orderId, orderDate, customerId, employeeId, total);
-                orders.add(order);
-            }
+      // Tạo đối tượng PreparedStatement
+      PreparedStatement statement = database.getConnection().prepareStatement(query);
+      statement.setInt(1, customerId);
 
-            resultSet.close();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+      // Thực thi câu truy vấn
+      ResultSet resultSet = statement.executeQuery();
 
-        return orders;
-    }
+      // Lặp qua tất cả các bản ghi đơn hàng
+      while (resultSet.next()) {
+        int orderId = resultSet.getInt("order_id");
+        Date orderDate = resultSet.getDate("order_date");
+        int employeeId = resultSet.getInt("employee_id");
+        double total = resultSet.getDouble("total");
 
+        Order order = new Order(orderId, orderDate, customerId, employeeId, total);
+        orders.add(order);
+      }
 
-
-    @Override
-    public boolean addOrder(Order order) {
-        try {
-            String sql = "INSERT INTO Orders (order_id, order_date, customer_id, employee_id, total) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement statement = database.getConnection().prepareStatement(sql);
-            statement.setInt(1, order.getOrderId());
-            statement.setDate(2, (Date) order.getOrderDate());
-            statement.setInt(3, order.getCustomerId());
-            statement.setInt(4, order.getEmployeeId());
-            statement.setDouble(5, order.getTotal());
-
-            int rowsAffected = statement.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+      resultSet.close();
+      statement.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
 
-    public double computeOrderTotal(int orderId) {
-        double totalPrice = 0.0;
-        String sql = "SELECT computeOrderTotal(?) AS total_price";
+    return orders;
+  }
 
-        try (PreparedStatement statement = database.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, orderId);
 
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                totalPrice = resultSet.getDouble("total_price");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+  @Override
+  public boolean addOrder(Order order) {
+    try {
+      String sql = "INSERT INTO Orders (order_id, order_date, customer_id, employee_id, total) VALUES (?, ?, ?, ?, ?)";
+      PreparedStatement statement = database.getConnection().prepareStatement(sql);
+      statement.setInt(1, order.getOrderId());
+      statement.setDate(2, (Date) order.getOrderDate());
+      statement.setInt(3, order.getCustomerId());
+      statement.setInt(4, order.getEmployeeId());
+      statement.setDouble(5, order.getTotal());
 
-        return totalPrice;
+      int rowsAffected = statement.executeUpdate();
+      return rowsAffected > 0;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public double computeOrderTotal(int orderId) {
+    double totalPrice = 0.0;
+    String sql = "SELECT computeOrderTotal(?) AS total_price";
+
+    try (PreparedStatement statement = database.getConnection().prepareStatement(sql)) {
+      statement.setInt(1, orderId);
+
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        totalPrice = resultSet.getDouble("total_price");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public boolean updateOrderTotal(int orderId) {
-        String sql = "UPDATE Orders SET total = ? WHERE order_id = ?";
-        Database database = new Database();
-        try {
-            Connection con = database.getConnection();
-            con.setAutoCommit(false);
-            PreparedStatement preparedStatement = con.prepareStatement(sql);
+    return totalPrice;
+  }
 
-            Scanner sc = new Scanner(System.in);
-            System.out.println("Nhập total order mới:");
+  @Override
+  public boolean updateOrderTotal(int orderId) {
+    String sql = "UPDATE Orders SET total = ? WHERE order_id = ?";
+    Database database = new Database();
+    try {
+      Connection con = database.getConnection();
+      con.setAutoCommit(false);
+      PreparedStatement preparedStatement = con.prepareStatement(sql);
 
-            double total;
-            while (!sc.hasNextDouble()) {
-                System.out.println("Vui lòng nhập một giá trị số thực hợp lệ:");
-                sc.next();
-            }
-            total = sc.nextDouble();
+      Scanner sc = new Scanner(System.in);
+      System.out.println("Nhập total order mới:");
 
-            preparedStatement.setDouble(1, total);
-            preparedStatement.setInt(2, orderId);
-            int rowsAffected = preparedStatement.executeUpdate();
-            con.commit();
-            con.setAutoCommit(true);
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+      double total;
+      while (!sc.hasNextDouble()) {
+        System.out.println("Vui lòng nhập một giá trị số thực hợp lệ:");
+        sc.next();
+      }
+      total = sc.nextDouble();
+
+      preparedStatement.setDouble(1, total);
+      preparedStatement.setInt(2, orderId);
+      int rowsAffected = preparedStatement.executeUpdate();
+      con.commit();
+      con.setAutoCommit(true);
+      return rowsAffected > 0;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
     }
+  }
 
 }

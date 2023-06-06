@@ -21,8 +21,10 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-    public Connection getConnection() {
+    public Database(){
         init();
+    }
+    public Connection getConnection() {
         return connection;
     }
 }
