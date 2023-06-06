@@ -13,9 +13,7 @@ public class Database {
     public void init() {
         try {
             Class.forName(JDBC_DRIVER);
-            System.out.println("Connecting database");
             connection = DriverManager.getConnection(DB_URL,USER,PASSWORD);
-            System.out.println("Database conected");
 
         } catch (ClassNotFoundException e) {
             throw  new RuntimeException(e);

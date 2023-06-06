@@ -1,0 +1,8 @@
+BEGIN
+    DECLARE totalPrice DOUBLE;
+    SELECT SUM(quantity * price) INTO totalPrice
+    FROM LineItem
+    WHERE order_id = orderId;
+    
+    RETURN totalPrice;
+END

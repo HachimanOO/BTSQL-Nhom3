@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.CallableStatement;
 
 public class CustomerDAOImpl implements CustomerDAO{
     private Database database;
@@ -26,40 +27,68 @@ public class CustomerDAOImpl implements CustomerDAO{
                 Customer cus = new Customer(rs.getInt("customer_id"),rs.getString("customer_name"));
                  listCustomer.add(cus);
             }
-            for(Customer  cus : listCustomer ) {
-                System.out.println(cus);
-            }
         } catch (SQLException e) {
             throw  new RuntimeException(e);
         }
         return listCustomer;
     }
 
-    @Override
     public boolean addCustomer(Customer customer) {
-        String sql = "INSERT INTO customer (customer_id, customer_name) VALUES (?, ?)";
         try {
-            PreparedStatement statement = database.getConnection().prepareStatement(sql);
+            // Tạo đối tượng CallableStatement để gọi Stored Procedure
+            CallableStatement statement = database.getConnection().prepareCall("{CALL add_customer(?, ?)}");
+
+            // Thiết lập giá trị cho các tham số
             statement.setInt(1, customer.getCustomerId());
             statement.setString(2, customer.getCustomerName());
-            System.out.println("Added success");
-            return statement.execute();
+
+            // Thực thi Stored Procedure
+            boolean result = statement.execute();
+
+            statement.close();
+            return result;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return false;
         }
     }
 
 
-
     @Override
     public boolean deleteCustomer(int customerId) {
-        return false;
+        try (
+             CallableStatement statement = database.getConnection().prepareCall("{CALL deleteCustomer(?)}")) {
+            // Set input parameter
+            statement.setInt(1, customerId);
+
+            // Execute the stored procedure
+            boolean success = statement.execute();
+
+            return success;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean updateCustomer(Customer customer) {
-        return false;
+        try (
+             CallableStatement statement = database.getConnection().prepareCall("{CALL update_customer(?, ?)}")) {
+            // Set input parameters
+            statement.setInt(1, customer.getCustomerId());
+            statement.setString(2, customer.getCustomerName());
+
+            // Execute the stored procedure
+            boolean success = statement.executeUpdate() > 0;
+
+            return success;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
 
     public static void main(String[] args) {
         CustomerDAO test = new CustomerDAOImpl();

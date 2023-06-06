@@ -7,5 +7,6 @@ import java.util.List;
 public interface OrderDAO {
     List<Order> getAllOrdersByCustomerId(int customerId);
     boolean addOrder(Order order);
+    double computeOrderTotal(int orderId);
     boolean updateOrderTotal(int orderId);
 }

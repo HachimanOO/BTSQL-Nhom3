@@ -1,6 +1,6 @@
 package fa.training.entities;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Order {
     private int orderId;
@@ -19,6 +19,7 @@ public class Order {
         this.employeeId = employeeId;
         this.total = total;
     }
+
 
     // Getters and setters
     public int getOrderId() {
