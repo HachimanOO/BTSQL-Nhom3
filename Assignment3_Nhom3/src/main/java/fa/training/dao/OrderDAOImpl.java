@@ -18,17 +18,13 @@ public class OrderDAOImpl implements OrderDAO{
         List<Order> orders = new ArrayList<>();
 
         try {
-            // Tạo câu truy vấn SQL
+       
             String query = "SELECT order_id, order_date, customer_id, employee_id, total FROM Orders WHERE customer_id = ?";
 
-            // Tạo đối tượng PreparedStatement
             PreparedStatement statement = database.getConnection().prepareStatement(query);
             statement.setInt(1, customerId);
-
-            // Thực thi câu truy vấn
             ResultSet resultSet = statement.executeQuery();
 
-            // Lặp qua tất cả các bản ghi đơn hàng
             while (resultSet.next()) {
                 int orderId = resultSet.getInt("order_id");
                 Date orderDate = resultSet.getDate("order_date");
